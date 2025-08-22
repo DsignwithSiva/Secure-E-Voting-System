@@ -41,8 +41,7 @@ Follow these steps to run the project locally:
 
 
 # 1. Clone the repository
-git clone https://github.com/YourUsername/E_voting-master.git
-
+git clone https://github.com/DsignwithSiva/Secure-E-Voting-System.git
 # 2. Navigate into the project folder
 cd E_voting-master
 
