@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Voter Verification System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f7;
+      margin: 0;
+      padding: 0;
+    }
+
+    .digital-clock, .vote-time {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .voter-list-container {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .glass-container {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 1300px;
+    }
+
+    .main-title {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .cards-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      flex: 1;
+      background: #fff;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      min-width: 300px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .voter-image img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid #007bff;
+      margin-top: 10px;
+    }
+
+    .fingerprint-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .scan-button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .scan-button.scanning {
+      background-color: #ffc107;
+    }
+
+    .verification-success {
+      margin-top: 10px;
+      color: green;
+      font-weight: bold;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .verified {
+      border: 2px solid green !important;
+    }
+
+    .cast-vote-button {
+      margin-top: 15px;
+      padding: 10px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .cast-vote-button.vote-cast {
+      background-color: #888;
+      cursor: not-allowed;
+    }
+
+    .right-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .candidates-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .candidate-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="digitalClock" class="digital-clock"></div>
+
+  <div class="voter-list-container">
+    <div class="glass-container">
+      <h1 class="main-title">Voter Verification System</h1>
+      <div id="voteTime" class="vote-time" style="display: none;"></div>
+
+      <div class="cards-container">
+        <!-- Voter Verification Panel -->
+        <div class="card voter-card">
+          <h2>Voter Verification</h2>
+          <div class="voter-details">
+            <div class="form-group">
+              <label for="voterId">Voter ID:</label>
+              <input id="voterId" type="text" required>
+            </div>
+            <button id="fetchVoterBtn" class="scan-button">Fetch Voter Details</button>
+
+            <div class="form-group">
+              <label for="voterName">Name:</label>
+              <input id="voterName" type="text" disabled>
+            </div>
+
+            <div class="voter-image">
+              <label>Voter Image:</label>
+              <div id="imageContainer" class="image-placeholder"></div>
+            </div>
+          </div>
+
+          <div class="fingerprint-section">
+            <button id="scanButton" class="scan-button" disabled>Scan Fingerprint</button>
+            <div id="verificationSuccess" class="verification-success hidden">
+              ✔ Verification Successful
+            </div>
+          </div>
+        </div>
+
+        <!-- Election & Candidate Panel -->
+        <div class="right-cards">
+          <div class="card election-card">
+            <h2>Election Details</h2>
+            <form id="electionForm">
+              <div class="form-group">
+                <label for="electionSelect">Select Election:</label>
+                <select id="electionSelect" disabled required>
+                  <option value="">-- Select Election --</option>
+                  <option value="presidential">Presidential Election</option>
+                  <option value="parliamentary">Parliamentary Election</option>
+                  <option value="local">Local Government Election</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="electionTopic">Election Topic:</label>
+                <textarea id="electionTopic" disabled placeholder="Enter election details here..."></textarea>
+              </div>
+            </form>
+          </div>
+
+          <div class="card candidates-card">
+            <h2>Candidate Selection</h2>
+            <form id="candidateForm">
+              <div class="candidates-list">
+                <div class="candidate-option">
+                  <input type="radio" id="can1" name="candidate" value="can1" disabled>
+                  <label for="can1">Candidate 1</label>
+                </div>
+                <div class="candidate-option">
+                  <input type="radio" id="can2" name="candidate" value="can2" disabled>
+                  <label for="can2">Candidate 2</label>
+                </div>
+                <div class="candidate-option">
+                  <input type="radio" id="can3" name="candidate" value="can3" disabled>
+                  <label for="can3">Candidate 3</label>
+                </div>
+              </div>
+              <button id="castVoteButton" type="submit" class="cast-vote-button" disabled>Cast Vote</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const digitalClock = document.getElementById('digitalClock');
+      const voteTime = document.getElementById('voteTime');
+      const voterId = document.getElementById('voterId');
+      const voterName = document.getElementById('voterName');
+      const imageContainer = document.getElementById('imageContainer');
+      const fetchVoterBtn = document.getElementById('fetchVoterBtn');
+      const scanButton = document.getElementById('scanButton');
+      const verificationSuccess = document.getElementById('verificationSuccess');
+      const electionSelect = document.getElementById('electionSelect');
+      const electionTopic = document.getElementById('electionTopic');
+      const candidateInputs = document.querySelectorAll('input[name="candidate"]');
+      const castVoteButton = document.getElementById('castVoteButton');
+      const candidateForm = document.getElementById('candidateForm');
+
+      function updateClock() {
+        const now = new Date();
+        digitalClock.innerText = now.toLocaleTimeString();
+      }
+
+      setInterval(updateClock, 1000);
+
+      fetchVoterBtn.addEventListener('click', function () {
+        const id = voterId.value.trim();
+        if (!id) {
+          alert("Please enter Voter ID");
+          return;
+        }
+
+        if (id === "ABC1234567") {
+          voterName.value = "John Doe";
+          imageContainer.innerHTML = '<img src="https://via.placeholder.com/120" alt="Voter Image">';
+          voterName.classList.add('verified');
+          imageContainer.classList.add('verified');
+          scanButton.disabled = false;
+        } else {
+          alert("Voter not found!");
+        }
+      });
+
+      scanButton.addEventListener('click', function () {
+        scanButton.classList.add('scanning');
+        scanButton.disabled = true;
+
+        setTimeout(() => {
+          verificationSuccess.classList.remove('hidden');
+          electionSelect.disabled = false;
+          electionTopic.disabled = false;
+          candidateInputs.forEach(input => input.disabled = false);
+          castVoteButton.disabled = false;
+
+          electionSelect.classList.add('verified');
+          electionTopic.classList.add('verified');
+          scanButton.classList.remove('scanning');
+        }, 2000);
+      });
+
+      candidateForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const selectedCandidate = document.querySelector('input[name="candidate"]:checked');
+        if (!selectedCandidate) {
+          alert('Please select a candidate before casting your vote.');
+          return;
+        }
+
+        electionSelect.disabled = true;
+        electionTopic.disabled = true;
+        candidateInputs.forEach(input => input.disabled = true);
+        castVoteButton.disabled = true;
+        castVoteButton.classList.add('vote-cast');
+        castVoteButton.innerText = 'Vote Cast';
+
+        const now = new Date();
+        voteTime.innerText = Vote Cast at: ${now.toLocaleTimeString()};
+        voteTime.style.display = 'block';
+      });
+    });
+  </script>
+</body>
+</html>

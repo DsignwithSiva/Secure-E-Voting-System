@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Election</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url("{{ url_for('static', filename='images/bgimage.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #fff;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: rgba(108, 92, 231, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .logout-btn:hover {
+            background: rgba(90, 77, 216, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+            font-size: 32px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: rgba(108, 92, 231, 0.8);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 15px 45px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            outline: none;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+        }
+
+        select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        select option {
+            background: #2c3e50;
+            color: #fff;
+        }
+
+        input::placeholder, textarea::placeholder, select::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: rgba(108, 92, 231, 0.8);
+            box-shadow: 0 0 15px rgba(108, 92, 231, 0.2);
+        }
+
+        input:focus + i, textarea:focus + i, select:focus + i {
+            color: rgba(108, 92, 231, 0.8);
+            transform: scale(1.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(108, 92, 231, 0.8);
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .submit-btn:hover {
+            background: rgba(90, 77, 216, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .warning {
+            color: #ff4d4d;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            padding-left: 15px;
+            animation: fadeInWarning 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+        }
+
+        @keyframes fadeInWarning {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group.error input,
+        .form-group.error textarea,
+        .form-group.error select {
+            border-color: #ff4d4d;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .form-group.error i {
+            color: #ff4d4d;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .logout-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            input, textarea, select {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('logout') }}" class="logout-btn">
+    <i class="fas fa-sign-out-alt"></i> Logout
+</a>
+
+
+    <div class="container">
+        <h2>Add Election</h2>
+
+        <form id="electionForm" onsubmit="return validateForm(event)">
+    <!-- Election ID -->
+    <div class="form-group">
+        <div class="input-wrapper">
+            <i class="fa fa-id-card"></i>
+            <input type="text" id="electionID" placeholder="Election ID" required>
+        </div>
+    </div>
+
+    <!-- Election Topic -->
+    <div class="form-group">
+        <div class="input-wrapper">
+            <i class="fa fa-bookmark"></i>
+            <input type="text" id="topic" placeholder="Election Topic" required>
+        </div>
+    </div>
+
+    <!-- Candidate Count -->
+    <div class="form-group">
+        <div class="input-wrapper">
+            <i class="fa fa-users"></i>
+            <select id="candidateCount" onchange="updateCandidateSelections()" required>
+                <option value="">Select Number of Candidates</option>
+                <option value="2">2 Candidates</option>
+                <option value="3">3 Candidates</option>
+                <option value="4">4 Candidates</option>
+                <option value="5">5 Candidates</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Candidate Selection Fields -->
+    <div class="form-group">
+        <div class="input-wrapper">
+            <i class="fa fa-user"></i>
+            <select id="candidate1" disabled required>
+                <option value="">Select Candidate 1</option>
+                <option value="Dinesh">Dinesh</option>
+                <option value="Siva">Siva</option>
+                <option value="Sai vivek">Sai vivek</option>
+                <option value="Shanmukh naidu">Shanmukh naidu</option>
+                <option value="Jyotshna">Jyotshna</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Repeat for candidate2, candidate3, candidate4, candidate5 -->
+             <div class="form-group">
+        <div class="input-wrapper">
+            <i class="fa fa-user"></i>
+            <select id="candidate2" disabled required>
+                <option value="">Select Candidate 2</option>
+                <option value="Dinesh">Dinesh</option>
+                <option value="Siva">Siva</option>
+                <option value="Sai vivek">Sai vivek</option>
+                <option value="Shanmukh naidu">Shanmukh naidu</option>
+                <option value="Jyotshna">Jyotshna</option>
+            </select>
+        </div>
+    </div>
+
+             <div class="form-group">
+        <div class="input-wrapper">
+            <i class="fa fa-user"></i>
+            <select id="candidate3" disabled required>
+                <option value="">Select Candidate 3</option>
+                <option value="Dinesh">Dinesh</option>
+                <option value="Siva">Siva</option>
+                <option value="Sai vivek">Sai vivek</option>
+                <option value="Shanmukh naidu">Shanmukh naidu</option>
+                <option value="Jyotshna">Jyotshna</option>
+            </select>
+        </div>
+    </div>
+
+             <div class="form-group">
+        <div class="input-wrapper">
+            <i class="fa fa-user"></i>
+            <select id="candidate4" disabled required>
+                <option value="Dinesh">Dinesh</option>
+                <option value="Siva">Siva</option>
+                <option value="Sai vivek">Sai vivek</option>
+                <option value="Shanmukh naidu">Shanmukh naidu</option>
+                <option value="Jyotshna">Jyotshna</option>
+            </select>
+        </div>
+    </div>
+
+             <div class="form-group">
+        <div class="input-wrapper">
+            <i class="fa fa-user"></i>
+            <select id="candidate5" disabled required>
+                <option value="Dinesh">Dinesh</option>
+                <option value="Siva">Siva</option>
+                <option value="Sai vivek">Sai vivek</option>
+                <option value="Shanmukh naidu">Shanmukh naidu</option>
+                <option value="Jyotshna">Jyotshna</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- End Date -->
+    <div class="form-group">
+        <div class="input-wrapper">
+            <i class="fa fa-calendar"></i>
+            <input type="date" id="endDate" required>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button class="submit-btn" id="btn" type="submit">Submit</button>
+</form>
+    </div>
+
+    <script>
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('endDate').min = today;
+
+       function handleLogout() {
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.5s ease';
+
+    setTimeout(() => {
+        window.location.href = 'index.html';
+        sessionStorage.clear();
+        localStorage.clear();
+    });
+}
+
+// Set minimum date for election end date
+    document.getElementById("endDate").min = new Date().toISOString().split('T')[0];
+
+    function preventDuplicateCandidates() {
+    const count = parseInt(document.getElementById("candidateCount").value) || 0;
+    let selectedValues = new Set();
+
+    for (let i = 1; i <= count; i++) {
+        const select = document.getElementById(`candidate${i}`);
+        if (select.value) {
+            selectedValues.add(select.value);
+        }
+    }
+
+    for (let i = 1; i <= count; i++) {
+        const select = document.getElementById(`candidate${i}`);
+        const options = select.options;
+
+        for (let j = 0; j < options.length; j++) {
+            if (options[j].value) {
+                options[j].disabled = selectedValues.has(options[j].value) && options[j].value !== select.value;
+            }
+        }
+    }
+}
+
+
+    function updateCandidateSelections() {
+    const count = parseInt(document.getElementById("candidateCount").value) || 0;
+
+        for (let i = 1; i <= 5; i++) {
+            let select = document.getElementById(`candidate${i}`);
+            select.disabled = i > count;
+            select.parentElement.parentElement.style.opacity = i > count ? "0.5" : "1";
+            if (i > count) select.value = "";
+        }
+
+        preventDuplicateCandidates(); // ✅ Call function to prevent duplicate selection
+    }
+
+        function validateForm(event) {
+            event.preventDefault();
+            
+            const electionID = document.getElementById('electionID');
+            const topic = document.getElementById('topic');
+            const candidateCount = document.getElementById('candidateCount');
+            const endDate = document.getElementById('endDate');
+            
+            let isValid = true;
+
+            // Reset all warnings and errors
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error');
+            });
+            document.querySelectorAll('.warning').forEach(warning => {
+                warning.style.display = 'none';
+            });
+
+            // Validate Election ID
+            if (!electionID.value.trim()) {
+                document.getElementById('idWarning').style.display = 'block';
+                electionID.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            }
+
+            // Validate Topic
+            if (!topic.value.trim()) {
+                document.getElementById('topicWarning').style.display = 'block';
+                topic.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            }
+
+            // Validate Candidate Count
+            const count = parseInt(candidateCount.value) || 0;
+            if (count === 0) {
+                document.getElementById('countWarning').style.display = 'block';
+                candidateCount.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            }
+
+            // Validate Selected Candidates
+            const selectedCandidates = new Set();
+            for (let i = 1; i <= count; i++) {
+                const candidate = document.getElementById(`candidate${i}`);
+                const warning = document.getElementById(`candidate${i}Warning`);
+                
+                if (!candidate.value) {
+                    warning.style.display = 'block';
+                    candidate.parentElement.parentElement.classList.add('error');
+                    isValid = false;
+                } else if (selectedCandidates.has(candidate.value)) {
+                    warning.textContent = 'Each candidate can only be selected once.';
+                    warning.style.display = 'block';
+                    candidate.parentElement.parentElement.classList.add('error');
+                    isValid = false;
+                } else {
+                    selectedCandidates.add(candidate.value);
+                }
+            }
+
+            // Validate End Date
+            if (!endDate.value) {
+                document.getElementById('dateWarning').style.display = 'block';
+                endDate.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            } else {
+                const selectedDate = new Date(endDate.value);
+                const currentDate = new Date();
+                
+                if (selectedDate <= currentDate) {
+                    document.getElementById('dateWarning').textContent = 'End date must be in the future.';
+                    document.getElementById('dateWarning').style.display = 'block';
+                    endDate.parentElement.parentElement.classList.add('error');
+                    isValid = false;
+                }
+            }
+
+            if (isValid) {
+                alert('Election created successfully!');
+                document.getElementById('electionForm').reset();
+                updateCandidateSelections();
+            }
+
+            return false;
+        }
+
+        // Add input event listeners for real-time validation
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.parentElement.parentElement.classList.remove('error');
+                    const warning = this.parentElement.parentElement.querySelector('.warning');
+                    if (warning) warning.style.display = 'none';
+                }
+            });
+        });
+     document.addEventListener("DOMContentLoaded", function () {
+    console.log("✅ JavaScript Loaded Correctly!");
+
+    for (let i = 1; i <= 5; i++) {
+        const select = document.getElementById(`candidate${i}`);
+        select.addEventListener("change", preventDuplicateCandidates);
+    }
+
+    const electionForm = document.getElementById("electionForm");
+
+    if (!electionForm) {
+        console.error("❌ Form not found! JavaScript is NOT running on the correct page.");
+        return;
+    }
+    const button = document.getElementById("btn");
+    button.addEventListener("click", function (event) {
+        event.preventDefault(); // Prevent form submission
+
+        console.log("🛠️ Debug: Form Submit Triggered");
+
+        // Collect form data
+        const electionID = document.getElementById("electionID").value;
+        const topic = document.getElementById("topic").value;
+        const candidateCountValue = document.getElementById("candidateCount").value;
+        const candidateCount = parseInt(candidateCountValue, 10);
+        const endDate = document.getElementById("endDate").value;
+
+        // Debugging: Print all collected data
+        console.log("🛠️ Debug: Election ID:", electionID);
+        console.log("🛠️ Debug: Topic:", topic);
+        console.log("🛠️ Debug: Candidate Count Value:", candidateCountValue);
+        console.log("🛠️ Debug: Candidate Count (Parsed):", candidateCount);
+        console.log("🛠️ Debug: End Date:", endDate);
+
+        // Validate data
+        if (!electionID) {
+            alert("❌ Election ID is required.");
+            return;
+        }
+        if (!topic) {
+            alert("❌ Election topic is required.");
+            return;
+        }
+        if (isNaN(candidateCount)) {
+            alert("❌ Candidate count must be a number.");
+            return;
+        }
+        if (!endDate) {
+            alert("❌ End date is required.");
+            return;
+        }
+
+        // Collect selected candidates
+        let candidates = [];
+        for (let i = 1; i <= candidateCount; i++) {
+            const candidate = document.getElementById(`candidate${i}`).value.trim();
+            if (candidate) {
+                candidates.push(candidate);
+            }
+        }
+
+        console.log("🛠️ Debug: Selected Candidates:", candidates);
+
+        // Ensure at least two candidates are selected
+        if (candidates.length < 2) {
+            alert("❌ Please select at least two candidates.");
+            return;
+        }
+
+        // Prepare data for the backend
+        const electionData = {
+            electionID: electionID,
+            topic: topic,
+            candidateCount: candidateCount,
+            endDate: endDate,
+            candidates: candidates
+        };
+
+        console.log("🛠️ Debug: Sending Data to Flask", electionData);
+
+        // Send data to Flask backend
+        fetch("/add_election", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(electionData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("🛠️ Debug: Server Response", data);
+            if (data.error) {
+                alert("❌ Error: " + data.error);
+            } else {
+                alert("✅ Election added successfully!");
+                electionForm.reset(); // Reset the form
+                updateCandidateSelections(); // Reset candidate selection
+            }
+        })
+        .catch(error => {
+            console.error("❌ Error:", error);
+            alert("❌ An error occurred while submitting the form.");
+        });
+    });
+});
+    </script>
+</body>
+</html>

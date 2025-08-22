@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculate Results</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url("{{ url_for('static', filename='images/bgimage.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #fff;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: rgba(108, 92, 231, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .logout-btn:hover {
+            background: rgba(90, 77, 216, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            width: 100%;
+            max-width: 1200px;
+            position: relative;
+            z-index: 2;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+            font-size: 32px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: rgba(108, 92, 231, 0.8);
+            border-radius: 2px;
+        }
+
+        .election-input {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .input-wrapper {
+            position: relative;
+            width: 300px;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 45px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            outline: none;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input:focus {
+            border-color: rgba(108, 92, 231, 0.8);
+            box-shadow: 0 0 15px rgba(108, 92, 231, 0.2);
+        }
+
+        .fetch-btn {
+            padding: 15px 30px;
+            background: rgba(108, 92, 231, 0.8);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .fetch-btn:hover {
+            background: rgba(90, 77, 216, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .candidate-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .candidate-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-color: rgba(108, 92, 231, 0.4);
+        }
+
+        .candidate-card.winner {
+            background: rgba(108, 92, 231, 0.2);
+            border-color: rgba(108, 92, 231, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .candidate-card.winner::before {
+            content: 'Winner';
+            position: absolute;
+            top: 20px;
+            right: -35px;
+            background: rgba(108, 92, 231, 0.9);
+            color: white;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .candidate-name {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .vote-count {
+            font-size: 36px;
+            font-weight: 700;
+            color: rgba(108, 92, 231, 0.9);
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .vote-label {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .no-results {
+            text-align: center;
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 50px;
+            display: none;
+        }
+
+        .warning {
+            color: #ff4d4d;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            text-align: center;
+            animation: fadeInWarning 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+        }
+
+        @keyframes fadeInWarning {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .election-input {
+                flex-direction: column;
+            }
+
+            .input-wrapper {
+                width: 100%;
+            }
+
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+
+            .candidate-card {
+                margin: 0 auto;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+   <a href="{{ url_for('logout') }}" class="logout-btn">
+    <i class="fas fa-sign-out-alt"></i> Logout
+</a>
+
+
+    <div class="container">
+        <h2>Calculate Results</h2>
+
+        <div class="election-input">
+            <div class="input-wrapper">
+                <i class="fas fa-vote-yea"></i>
+                <input type="text" id="electionID" placeholder="Enter Election ID" pattern="[0-9]*">
+            </div>
+            <button class="fetch-btn" onclick="fetchResults()">
+                <i class="fas fa-sync-alt"></i> Fetch Results
+            </button>
+        </div>
+        <div class="warning" id="warning">Please enter a valid Election ID.</div>
+
+        <div class="cards-container" id="cardsContainer"></div>
+        <div class="no-results" id="noResults">No results found for this election.</div>
+    </div>
+
+    <script>
+        // Simulated election data (replace with your actual data source)
+        const electionData = {
+            '101': [
+                { name: 'CBN', votes: 150 },
+                { name: 'Pawan Kalyan', votes: 200 },
+                { name: 'Jagan', votes: 175 }
+            ],
+            '102': [
+                { name: 'KCR', votes: 300 },
+                { name: 'Revanth', votes: 250 }
+            ]
+        };
+
+        function handleLogout() {
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.5s ease';
+
+    setTimeout(() => {
+        window.location.href = 'admin login.html';
+        sessionStorage.clear();
+        localStorage.clear();
+    });
+}
+        function fetchResults() {
+    const electionID = document.getElementById('electionID').value.trim();
+    if (!electionID) {
+        document.getElementById('warning').style.display = 'block';
+        return;
+    } else {
+        document.getElementById('warning').style.display = 'none';
+    }
+
+    fetch(`/get_results?electionID=${electionID}`)
+        .then(response => response.json())
+        .then(data => {
+            displayResults(data);
+        })
+        .catch(error => {
+            console.error('Error fetching results:', error);
+            document.getElementById('noResults').style.display = 'block';
+        });
+}
+
+function displayResults(candidates) {
+    const cardsContainer = document.getElementById('cardsContainer');
+    const noResults = document.getElementById('noResults');
+    cardsContainer.innerHTML = '';
+
+    if (candidates.length === 0) {
+        noResults.style.display = 'block';
+        return;
+    }
+
+    noResults.style.display = 'none';
+    let maxVotes = Math.max(...candidates.map(c => c.voteCount));
+
+    candidates.forEach(candidate => {
+        const card = document.createElement('div');
+        card.classList.add('candidate-card');
+        if (candidate.voteCount === maxVotes) {
+            card.classList.add('winner');
+        }
+        card.innerHTML = `
+            <div class="candidate-name">${candidate.candidateName}</div>
+            <div class="vote-count">${candidate.voteCount}</div>
+            <div class="vote-label">Votes</div>
+        `;
+        cardsContainer.appendChild(card);
+    });
+}
+
+    </script>
+</body>
+</html>

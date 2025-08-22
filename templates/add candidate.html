@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Candidate</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url("{{ url_for('static', filename='images/bgimage.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #fff;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: rgba(108, 92, 231, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .logout-btn:hover {
+            background: rgba(90, 77, 216, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+            font-size: 32px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: rgba(108, 92, 231, 0.8);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 15px 45px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            outline: none;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.5;
+            padding-top: 18px;
+        }
+
+        input:focus, textarea:focus {
+            border-color: rgba(108, 92, 231, 0.8);
+            box-shadow: 0 0 15px rgba(108, 92, 231, 0.2);
+        }
+
+        input:focus + i, textarea:focus + i {
+            color: rgba(108, 92, 231, 0.8);
+            transform: scale(1.1);
+        }
+
+        .photo-upload {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .photo-upload:hover {
+            border-color: rgba(108, 92, 231, 0.8);
+        }
+
+        .photo-upload input[type="file"] {
+            opacity: 0;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 120px;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .photo-upload label {
+            background: rgba(108, 92, 231, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .photo-upload label:hover {
+            background: rgba(90, 77, 216, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .file-name {
+            flex: 1;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin: 0 10px;
+        }
+
+        .photo-upload button {
+            background: rgba(108, 92, 231, 0.8);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .photo-upload button:hover {
+            background: rgba(90, 77, 216, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .photo-preview {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .photo-preview img {
+            max-width: 150px;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            display: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(108, 92, 231, 0.8);
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .submit-btn:hover {
+            background: rgba(90, 77, 216, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .warning, .id-warning {
+            color: #ff4d4d;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            padding-left: 15px;
+            animation: fadeInWarning 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+        }
+
+        @keyframes fadeInWarning {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group.error input,
+        .form-group.error textarea {
+            border-color: #ff4d4d;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .form-group.error i {
+            color: #ff4d4d;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .photo-upload {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .photo-upload input[type="file"] {
+                width: 100%;
+            }
+
+            .file-name {
+                text-align: left;
+                margin: 5px 0;
+            }
+
+            .logout-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('logout') }}" class="logout-btn">
+    <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+
+    <div class="container">
+        <h2>Add Candidate</h2>
+
+        <form id="candidateForm" enctype="multipart/form-data">
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="fa fa-id-card"></i>
+                    <input type="text" id="electionID" placeholder="Election ID" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="fa fa-user"></i>
+                    <input type="text" id="candidateName" placeholder="Candidate Name">
+                </div>
+                <div class="warning" id="nameWarning">Please enter the candidate name.</div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="fa fa-id-badge"></i>
+                    <input type="text" id="candidateID" placeholder="Candidate ID" pattern="[0-9]*">
+                </div>
+                <div class="warning" id="idWarning">Please enter the candidate ID.</div>
+                <div class="id-warning" id="idNumberWarning">Please enter numbers only for Candidate ID.</div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="fa fa-home"></i>
+                    <textarea id="candidateAddress" placeholder="Address"></textarea>
+                </div>
+                <div class="warning" id="addressWarning">Please enter the address.</div>
+            </div>
+
+            <div class="form-group">
+                <div class="photo-upload">
+                    <label for="photoInput">Choose File</label>
+                    <input type="file" id="photoInput" accept="image/*">
+                    <span class="file-name" id="fileName">No file chosen</span>
+                    <button type="button" onclick="viewPhoto()">View Photo</button>
+                </div>
+                <div class="photo-preview">
+                    <img id="photoPreview" alt="Preview">
+                </div>
+                <div class="warning" id="photoWarning">Please upload a photo.</div>
+            </div>
+
+            <button class="submit-btn" type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        function handleLogout() {
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.5s ease';
+
+    setTimeout(() => {
+        window.location.href = 'index.html';
+        sessionStorage.clear();
+        localStorage.clear();
+    });
+}
+
+        function viewPhoto() {
+            const input = document.getElementById('photoInput');
+            const preview = document.getElementById('photoPreview');
+            const fileName = document.getElementById('fileName');
+            const photoWarning = document.getElementById('photoWarning');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    photoWarning.style.display = 'none';
+                    input.parentElement.parentElement.classList.remove('error');
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                photoWarning.style.display = 'block';
+                preview.style.display = 'none';
+            }
+        }
+
+        function validateForm(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('candidateName');
+            const id = document.getElementById('candidateID');
+            const address = document.getElementById('candidateAddress');
+            const photo = document.getElementById('photoInput');
+            const preview = document.getElementById('photoPreview');
+            
+            const nameWarning = document.getElementById('nameWarning');
+            const idWarning = document.getElementById('idWarning');
+            const idNumberWarning = document.getElementById('idNumberWarning');
+            const addressWarning = document.getElementById('addressWarning');
+            const photoWarning = document.getElementById('photoWarning');
+
+            let isValid = true;
+
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error');
+            });
+            document.querySelectorAll('.warning, .id-warning').forEach(warning => {
+                warning.style.display = 'none';
+            });
+
+            if (!name.value.trim()) {
+                nameWarning.style.display = 'block';
+                name.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            }
+
+            if (!id.value.trim()) {
+                idWarning.style.display = 'block';
+                id.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            } else if (!/^\d+$/.test(id.value.trim())) {
+                idNumberWarning.style.display = 'block';
+                id.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            }
+
+            if (!address.value.trim()) {
+                addressWarning.style.display = 'block';
+                address.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            }
+
+            if (!photo.files.length) {
+                photoWarning.style.display = 'block';
+                photo.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            }
+
+            if (isValid) {
+                alert('Form submitted successfully!');
+                document.getElementById('candidateForm').reset();
+                preview.style.display = 'none';
+                document.getElementById('fileName').textContent = 'No file chosen';
+            }
+
+            return false;
+        }
+
+        document.getElementById('candidateID').addEventListener('input', function() {
+            const idNumberWarning = document.getElementById('idNumberWarning');
+            if (this.value.trim() && !/^\d+$/.test(this.value)) {
+                idNumberWarning.style.display = 'block';
+                this.parentElement.parentElement.classList.add('error');
+            } else {
+                idNumberWarning.style.display = 'none';
+                if (this.value.trim()) {
+                    this.parentElement.parentElement.classList.remove('error');
+                }
+            }
+        });
+
+        document.getElementById('photoInput').addEventListener('change', function() {
+            const fileName = document.getElementById('fileName');
+            const preview = document.getElementById('photoPreview');
+            
+            if (this.files.length > 0) {
+                fileName.textContent = this.files[0].name;
+                this.parentElement.parentElement.classList.remove('error');
+                document.getElementById('photoWarning').style.display = 'none';
+                preview.style.display = 'none';
+            } else {
+                fileName.textContent = 'No file chosen';
+                preview.style.display = 'none';
+            }
+        });
+
+        document.querySelectorAll('input, textarea').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.parentElement.parentElement.classList.remove('error');
+                    const warning = this.parentElement.parentElement.querySelector('.warning');
+                    if (warning) warning.style.display = 'none';
+                }
+            });
+        });
+      document.getElementById("candidateForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const photoInput = document.getElementById("photoInput").files[0];
+    if (!photoInput) {
+        alert("Please upload an image!");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("electionID", document.getElementById("electionID").value); // Added Election ID
+    formData.append("candidateName", document.getElementById("candidateName").value);
+    formData.append("candidateID", document.getElementById("candidateID").value);
+    formData.append("candidateAddress", document.getElementById("candidateAddress").value);
+    formData.append("photoInput", photoInput); // Append image
+
+    console.log("Sending form data:", [...formData.entries()]); // Debugging
+
+    fetch("http://127.0.0.1:5000/add_candidate", {
+        method: "POST",
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert("Error: " + data.error);
+        } else {
+            alert(data.message);
+            document.getElementById("candidateForm").reset();
+            document.getElementById("photoPreview").src='';
+        }
+    })
+    .catch(error => console.error("Error:", error));
+});
+
+    </script>
+</body>
+</html>

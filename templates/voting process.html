@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voter Verification System</title>
+  <style>
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* Container Styles */
+    .voter-list-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .glass-container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      overflow: hidden;
+    }
+
+    .main-title {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Cards Layout */
+    .cards-container {
+      display: flex;
+      gap: 20px;
+      height: 600px;
+    }
+
+    .voter-card {
+      flex: 1;
+      height: 100%;
+    }
+
+    .right-cards {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .election-card, .candidates-card {
+      flex: 1;
+    }
+
+    /* Card Styles */
+    .card {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      overflow: auto;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .card h2 {
+      color: white;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      text-align: center;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 10px;
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      color: white;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]::placeholder,
+    textarea::placeholder,
+    select::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    input[type="text"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    input[disabled],
+    select[disabled],
+    textarea[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    input.verified,
+    select.verified,
+    textarea.verified {
+      border-color: rgba(72, 255, 72, 0.5);
+      background: rgba(72, 255, 72, 0.1);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* Fingerprint Section */
+    .fingerprint-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .scan-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .scan-button:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .scan-button:active {
+      transform: translateY(0);
+    }
+
+    .scan-button.scanning {
+      background: rgba(72, 209, 204, 0.3);
+      animation: pulse 1.5s infinite;
+    }
+
+    .scan-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(72, 209, 204, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(72, 209, 204, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(72, 209, 204, 0);
+      }
+    }
+
+    .verification-success {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 15px;
+      color: #4ade80;
+      font-weight: 600;
+    }
+
+    .verification-success.hidden {
+      display: none;
+    }
+
+    /* Voter Image */
+    .voter-image {
+      margin-top: 20px;
+    }
+
+
+    .image-placeholder {
+      width: 120px;
+      height: 120px;
+      margin: 10px auto;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .voter-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
+    .image-placeholder.verified {
+      border-color: rgba(72, 255, 72, 0.5);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Candidate Selection */
+    .candidates-list {
+      margin-bottom: 20px;
+    }
+
+    .candidate-option {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .candidate-option:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .candidate-option input[type="radio"] {
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .candidate-option label {
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    /* Cast Vote Button */
+    .cast-vote-button {
+      width: 100%;
+      padding: 12px;
+      background: rgba(79, 70, 229, 0.6);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .cast-vote-button:hover {
+      background: rgba(79, 70, 229, 0.8);
+    }
+
+    .cast-vote-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .cast-vote-button.vote-cast {
+      background: rgba(16, 185, 129, 0.6);
+    }
+
+    /* Digital Clock Styles */
+    .digital-clock {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px 25px;
+      border-radius: 10px;
+      color: white;
+      font-size: 1.5rem;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      display: none;
+    }
+
+    .vote-time {
+      text-align: center;
+      color: #4ade80;
+      font-size: 1.2rem;
+      margin-top: 10px;
+      font-weight: bold;
+      display: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .cards-container {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .voter-card, .right-cards {
+        width: 100%;
+      }
+
+      .card {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Digital clock -->
+  <div id="digitalClock" class="digital-clock"></div>
+
+  <div class="voter-list-container">
+    <div class="glass-container">
+      <h1 class="main-title">Voter Verification System</h1>
+
+      <!-- Vote time display -->
+      <div id="voteTime" class="vote-time"></div>
+
+      <div class="cards-container">
+        <!-- Left Card - Voter Verification -->
+        <div class="card voter-card">
+          <h2>Voter Verification</h2>
+          <!-- Place this inside the .voter-card section where fingerprint scan happens -->
+<div class="fingerprint-section">
+  <input id="voterId" type="text" placeholder="Enter Voter ID">
+  <button id="scanButton" class="scan-button">Scan Fingerprint</button>
+  <div id="fingerprintStatus" class="verification-success hidden">
+    <span>Fingerprint scanned successfully</span>
+  </div>
+
+  <!-- OTP Section -->
+  <button id="sendOtpBtn" class="scan-button">Send OTP</button>
+  <input id="otpInput" type="text" placeholder="Enter OTP" disabled style="margin-top:10px;padding:10px;border-radius:5px;border:none;">
+  <button id="verifyOtpBtn" class="cast-vote-button" disabled>Verify OTP</button>
+</div>
+
+
+          <div class="voter-details">
+            <div class="form-group">
+              <label>Voter ID:</label>
+              <input id="voterIdDisplay" type="text" disabled>
+            </div>
+
+            <div class="form-group">
+              <label>Name:</label>
+              <input id="voterName" type="text" disabled>
+            </div>
+
+            <div class="voter-image">
+              <label>Voter Image:</label>
+              <div id="imageContainer" class="image-placeholder">
+                <!-- User icon will appear here when verified -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-cards">
+          <!-- Right Top Card - Election Details -->
+          <div class="card election-card">
+            <h2>Election Details</h2>
+            <form id="electionForm">
+              <div class="form-group">
+                <label>Select Election:</label>
+                <select id="electionSelect" disabled required>
+                  <option value="">-- Select Election --</option>
+
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Election Topic:</label>
+                <textarea id="electionTopic" disabled placeholder="Enter election details here..."></textarea>
+              </div>
+            </form>
+          </div>
+
+          <!-- Right Bottom Card - Candidate Selection -->
+          <div class="card candidates-card">
+            <h2>Candidate Selection</h2>
+            <form id="candidateForm">
+              <div class="candidates-list">
+                <div class="candidate-option">
+                  <input type="radio" id="can1" name="candidate" value="can1" disabled>
+                  <label for="can1">Candidate 1</label>
+                </div>
+
+                <div class="candidate-option">
+                  <input type="radio" id="can2" name="candidate" value="can2" disabled>
+                  <label for="can2">Candidate 2</label>
+                </div>
+
+                <div class="candidate-option">
+                  <input type="radio" id="can3" name="candidate" value="can3" disabled>
+                  <label for="can3">Candidate 3</label>
+                </div>
+
+                <div class="candidate-option">
+                  <input type="radio" id="can4" name="candidate" value="can4" disabled>
+                  <label for="can4">Candidate 4</label>
+                </div>
+
+                <div class="candidate-option">
+                  <input type="radio" id="can5" name="candidate" value="can5" disabled>
+                  <label for="can5">Candidate 5</label>
+                </div>
+              </div>
+
+              <button id="castVoteButton" type="submit" class="cast-vote-button" disabled>
+                Cast Vote
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    let otpVerified = false;
+    var voterIdValue;
+// Simulate OTP sending
+document.getElementById('sendOtpBtn').addEventListener('click', () => {
+  voterIdValue  = document.getElementById('voterId').value.trim();
+  if (!voterId) {
+    alert("Enter Voter ID first!");
+    return;
+  }
+
+  alert("OTP has been sent to your registered mobile.");
+  document.getElementById("otpInput").disabled = false;
+  document.getElementById("verifyOtpBtn").disabled = false;
+});
+
+// OTP Verification Simulation
+document.getElementById("verifyOtpBtn").addEventListener("click", () => {
+  const otp = document.getElementById("otpInput").value.trim();
+  if (otp === "123456") {  // simulate OTP match
+    alert("OTP Verified Successfully!");
+    console.log("hello")
+    console.log("inside fetch :",voterIdValue);
+    otpVerified = true;
+     fetch(`/get_voter_details?voterID=${voterIdValue}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          alert("Error fetching voter details: " + data.error);
+        } else {
+          document.getElementById("voterIdDisplay").value = voterIdValue ;
+          document.getElementById("voterName").value = data.voterName;
+          const imgBox = document.getElementById("imageContainer");
+          imgBox.innerHTML = `<img src="${data.photoPath}" alt="Voter Image" class="voter-img">`;
+        }
+      })
+      .catch(err => {
+        console.error("Failed to fetch voter details:", err);
+        alert("Error fetching voter details.");
+      });
+
+    // Unlock election section
+    document.getElementById("electionSelect").disabled = false;
+    document.getElementById("electionTopic").disabled = false;
+    document.querySelectorAll('input[name="candidate"]').forEach(input => input.disabled = false);
+    document.getElementById("castVoteButton").disabled = false;
+
+    document.getElementById("verifyOtpBtn").textContent = "OTP Verified";
+    document.getElementById("verifyOtpBtn").classList.add("vote-cast");
+    document.getElementById("verifyOtpBtn").disabled = true;
+  } else {
+    alert("Invalid OTP!");
+  }
+});
+
+
+document.getElementById("scanButton").addEventListener("click", () => {
+  const voterID = document.getElementById("voterId").value.trim();
+  console.log(voterID)
+  if (!voterID) {
+    alert("Please enter Voter ID first.");
+    return;
+  }
+
+  // Show scanning indicator (optional)
+  const scanBtn = document.getElementById("scanButton");
+  scanBtn.disabled = true;
+  scanBtn.textContent = "Scanning...";
+
+  const pidOptions = `
+      <PidOptions ver="1.0">
+          <Opts fCount="1" fType="0" iCount="0" pCount="0"
+              format="0" pidVer="2.0" timeout="20000"
+              posh="UNKNOWN" env="P" />
+      </PidOptions>
+  `;
+
+  const xhr = new XMLHttpRequest();
+  xhr.open("CAPTURE", "http://127.0.0.1:11100/rd/capture", true);
+  xhr.setRequestHeader("Content-Type", "text/xml");
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      scanBtn.disabled = false;
+      scanBtn.textContent = "Scan Fingerprint";
+
+      if (xhr.status === 200) {
+        const capturedXml = xhr.responseText;
+
+        // Optional: show that it's stored or do something with it here
+
+        // ✅ Alert after successful scan
+      } else {
+        alert("❌ Fingerprint scan failed. Please ensure RD Service is running.");
+      }
+    }
+  };
+
+  xhr.send(pidOptions);
+});
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM Elements
+      const scanButton = document.getElementById('scanButton');
+      const verificationSuccess = document.getElementById('verificationSuccess');
+      const voterId = document.getElementById('voterId');
+      const voterName = document.getElementById('voterName');
+      const imageContainer = document.getElementById('imageContainer');
+      const electionSelect = document.getElementById('electionSelect');
+      const electionTopic = document.getElementById('electionTopic');
+      const candidateInputs = document.querySelectorAll('input[name="candidate"]');
+      const castVoteButton = document.getElementById('castVoteButton');
+      const candidateForm = document.getElementById('candidateForm');
+
+      // New DOM Elements for clock
+      const digitalClock = document.getElementById('digitalClock');
+      const voteTime = document.getElementById('voteTime');
+
+      // State
+      let isVerified = false;
+      let isScanning = false;
+      let isVoteCast = false;
+
+      // Function to format time
+      function formatTime(date) {
+        return date.toLocaleTimeString('en-US', {
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      }
+
+      // Function to update digital clock
+      function updateClock() {
+        const now = new Date();
+        digitalClock.textContent = formatTime(now);
+      }
+
+      // Event Listeners
+      scanButton.addEventListener('click', handleScanFingerprint);
+      castVoteButton.addEventListener('click', handleCastVote);
+
+    // Fetch election IDs and populate the select box
+fetch("/get_all_election_ids")
+  .then(res => res.json())
+  .then(data => {
+    if (data.electionIDs && Array.isArray(data.electionIDs)) {
+      const select = document.getElementById("electionSelect");
+      data.electionIDs.forEach(id => {
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = id;
+        select.appendChild(option);
+      });
+    } else {
+      console.error("Invalid data format for election IDs");
+    }
+  })
+  .catch(err => {
+    console.error("Error fetching election IDs:", err);
+  });
+
+
+      function handleScanFingerprint() {
+    const pidOptions = `
+        <PidOptions ver="1.0">
+            <Opts fCount="1" fType="0" iCount="0" pCount="0"
+                format="0" pidVer="2.0" timeout="20000"
+                posh="UNKNOWN" env="P" />
+        </PidOptions>
+    `;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("CAPTURE", "http://127.0.0.1:11100/rd/capture", true);
+    xhr.setRequestHeader("Content-Type", "text/xml");
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                const capturedXml = xhr.responseText;
+                alert("Fingerprint scanned successfully! ✅");
+
+
+                fetch("/verify_fingerprint", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ fingerprintXml: capturedXml })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        scanButton.textContent = "Scan Fingerprint";
+                        scanButton.disabled = false;
+                        scanButton.classList.remove("scanning");
+                    } else {
+                        isVerified = true;
+                        scanButton.classList.remove("scanning");
+                        scanButton.textContent = "Verified";
+                        verificationSuccess.classList.remove("hidden");
+
+                        voterId.value = data.voterID;
+                        voterName.value = data.voterName;
+                        imageContainer.innerHTML = `<img src="${data.photoPath}" alt="Voter Image" class="voter-img">`;
+
+                        document.querySelectorAll('input[name="candidate"]').forEach(input => input.disabled = false);
+                        castVoteButton.disabled = false;
+                    }
+                });
+            } else {
+                alert("Fingerprint scan failed. Make sure RD Service is running.");
+                scanButton.textContent = "Scan Failed";
+            }
+        }
+    };
+
+    xhr.send(pidOptions);
+}
+
+// Reset only Voter Details (keep Election and Candidates same)
+function resetVoterDetails() {
+  console.log("inside function");
+    verifiedOTP = false;
+    fingerprintScanned = false;
+
+    document.getElementById('voterId').value = '';
+    document.getElementById('otpInput').value = '';
+    console.log("working...");
+    document.getElementById('voterName').value = '';
+    document.getElementById('voterIdDisplay').value = '';
+    document.getElementById('imageContainer').innerHTML = '';
+
+    document.getElementById('voteTime').textContent = '';
+
+    // Optional: Also uncheck selected candidate if you want fresh candidate selection for next voter
+    const selectedCandidate = document.querySelector('input[name="candidate"]:checked');
+    if (selectedCandidate) {
+        selectedCandidate.checked = false;
+    }
+}
+
+
+      function handleCastVote(e) {
+  e.preventDefault();
+console.log("entered");
+ // if (!isVerified || isVoteCast) return;
+console.log("yes");
+  const selectedElection = electionSelect.value;
+  const topic = electionTopic.value;
+  let selectedCandidate = '';
+let candidateInputs = document.querySelectorAll('input[name="candidate"]');
+
+  candidateInputs.forEach(input => {
+    if (input.checked) {
+      console.log(input.value);
+      selectedCandidate = input.value;
+    }
+  });
+  console.log("no value");
+   console.log(selectedCandidate);
+  if (!selectedElection) {
+    alert('Please select an election');
+    return;
+  }
+
+  if (!selectedCandidate) {
+    alert('Please select a candidate');
+    return;
+  }
+
+  // ✅ Send vote to backend
+  fetch('/cast_vote', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      electionID: selectedElection,
+      candidate: selectedCandidate
+    }),
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        alert("Vote not cast: " + data.error);
+        return;
+      }
+
+      alert("✅ " + data.message);
+      isVoteCast = true;
+      console.log("before function");
+      setTimeout(resetVoterDetails, 3000);
+
+      // Visuals
+      digitalClock.style.display = 'block';
+      updateClock();
+      const clockInterval = setInterval(updateClock, 1000);
+
+      const castTime = new Date();
+      voteTime.textContent = `Vote cast at: ${formatTime(castTime)}`;
+      voteTime.style.display = 'block';
+
+      castVoteButton.textContent = 'Vote Cast Successfully!';
+      castVoteButton.classList.add('vote-cast');
+      electionSelect.disabled = true;
+      electionTopic.disabled = true;
+
+      candidateInputs.forEach(input => input.disabled = true);
+
+      setTimeout(() => {
+  clearInterval(clockInterval);
+
+  // Reset state
+  isVerified = false;
+  isVoteCast = false;
+
+  // Hide digital clock and vote time
+  digitalClock.style.display = 'none';
+  voteTime.style.display = 'none';
+
+  // Reset UI elements
+  scanButton.textContent = 'Scan Fingerprint';
+  scanButton.disabled = false;
+  verificationSuccess.classList.add('hidden');
+
+  // ✅ Clear only voter details (NOT election or candidate data)
+document.getElementById('voterId').value = '';
+document.getElementById('voterName').value = '';
+document.getElementById('voterIdDisplay').value = '';
+document.getElementById('imageContainer').innerHTML = '';
+document.getElementById('otpInput').value = '';
+document.getElementById('otpInput').disabled = true;
+document.getElementById('verifyOtpBtn').disabled = true;
+document.getElementById('verifyOtpBtn').textContent = 'Verify OTP';
+document.getElementById('verifyOtpBtn').classList.remove('vote-cast');
+
+  castVoteButton.textContent = 'Cast Vote';
+  castVoteButton.classList.remove('vote-cast');
+  castVoteButton.disabled = true;
+}, 3000);
+    })
+    .catch(err => {
+      alert("❌ Error casting vote.");
+      console.error(err);
+    });
+}
+
+      function updateCandidateOptions(candidates) {
+    const candidateContainer = document.querySelector(".candidates-list");
+    candidateContainer.innerHTML = ""; // Clear previous candidates
+
+    candidates.forEach((candidate, index) => {
+        const candidateOption = document.createElement("div");
+        candidateOption.classList.add("candidate-option");
+        candidateOption.innerHTML = `
+            <input type="radio" id="can${index + 1}" name="candidate" value="${candidate}" >
+            <label for="can${index + 1}">${candidate}</label>
+        `;
+        candidateContainer.appendChild(candidateOption);
+    });
+    console.log(document.querySelectorAll('input[name="candidate"]'));
+
+}
+
+      document.getElementById("electionSelect").addEventListener("change", function () {
+  const electionID = this.value.trim();
+
+  if (!electionID) {
+    document.getElementById("electionTopic").value = "";
+    return;
+  }
+
+  // Disable further change after first valid selection
+  this.disabled = true;
+  document.getElementById("electionTopic").disabled = true;
+
+  fetch(`/get_election_details?electionID=${electionID}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+
+      document.getElementById("electionTopic").value = data.topic;
+
+      // Update candidate fields dynamically
+      updateCandidateOptions(data.candidates);
+
+      // Enable candidate selection now
+      document.querySelectorAll('input[name="candidate"]').forEach(input => {
+        input.disabled = false;
+      });
+    })
+    .catch(error => console.error("Error fetching election details:", error));
+});
+
+    });
+  </script>
+</body>
+</html>

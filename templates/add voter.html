@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Voter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url("{{ url_for('static', filename='images/bgimage.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #fff;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: rgba(108, 92, 231, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .logout-btn:hover {
+            background: rgba(90, 77, 216, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+            font-size: 32px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: rgba(108, 92, 231, 0.8);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 15px 45px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            outline: none;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.5;
+            padding-top: 18px;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input:focus, textarea:focus {
+            border-color: rgba(108, 92, 231, 0.8);
+            box-shadow: 0 0 15px rgba(108, 92, 231, 0.2);
+        }
+
+        input:focus + i, textarea:focus + i {
+            color: rgba(108, 92, 231, 0.8);
+            transform: scale(1.1);
+        }
+
+        .photo-upload {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .photo-upload:hover {
+            border-color: rgba(108, 92, 231, 0.8);
+        }
+
+        .photo-upload input[type="file"] {
+            width: 120px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            color: transparent;
+            position: relative;
+        }
+
+        .photo-upload input[type="file"]::-webkit-file-upload-button {
+            visibility: hidden;
+            width: 0;
+        }
+
+        .photo-upload input[type="file"]::before {
+            content: 'Choose file';
+            display: inline-block;
+            background: rgba(108, 92, 231, 0.8);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .photo-upload input[type="file"]:hover::before {
+            background: rgba(90, 77, 216, 0.9);
+        }
+
+        .file-name {
+            flex: 1;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin: 0 10px;
+        }
+
+        .photo-upload button {
+            background: rgba(108, 92, 231, 0.8);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .photo-upload button:hover {
+            background: rgba(90, 77, 216, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .photo-preview {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .photo-preview img {
+            max-width: 150px;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            display: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .fingerprint-section {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .fingerprint-box {
+            width: 150px;
+            height: 150px;
+            margin: 15px auto;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .fingerprint-box i {
+            font-size: 48px;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+
+        .fingerprint-box.scanning {
+            border-color: rgba(108, 92, 231, 0.8);
+            animation: pulse 1.5s infinite;
+        }
+
+        .fingerprint-box.scanning i {
+            color: rgba(108, 92, 231, 0.8);
+            animation: fadeInOut 1.5s infinite;
+        }
+
+        .fingerprint-status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(108, 92, 231, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(108, 92, 231, 0); }
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(108, 92, 231, 0.8);
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .submit-btn:hover {
+            background: rgba(90, 77, 216, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .warning {
+            color: #ff4d4d;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            padding-left: 15px;
+            animation: fadeInWarning 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+        }
+
+        @keyframes fadeInWarning {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group.error input,
+        .form-group.error textarea {
+            border-color: #ff4d4d;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .form-group.error i {
+            color: #ff4d4d;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .photo-upload {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .photo-upload input[type="file"] {
+                width: 100%;
+            }
+
+            .file-name {
+                text-align: left;
+                margin: 5px 0;
+            }
+
+            .logout-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .fingerprint-box {
+                width: 120px;
+                height: 120px;
+            }
+
+            .fingerprint-box i {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('logout') }}" class="logout-btn">
+    <i class="fas fa-sign-out-alt"></i> Logout
+</a>
+
+
+    <div class="container">
+        <h2>Add Voter</h2>
+
+        <form id="voterForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="fa fa-id-card"></i>
+                    <input type="text" id="voterID" placeholder="Voter ID" pattern="[0-9]*">
+                </div>
+                <div class="warning" id="idWarning">Please enter the voter ID.</div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="fa fa-user"></i>
+                    <input type="text" id="voterName" placeholder="Full Name">
+                </div>
+                <div class="warning" id="nameWarning">Please enter your full name.</div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="fa fa-phone"></i>
+                    <input type="tel" id="mobileNumber" placeholder="Mobile Number" pattern="[0-9]{10}">
+                </div>
+                <div class="warning" id="mobileWarning">Please enter a valid 10-digit mobile number.</div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="fa fa-home"></i>
+                    <textarea id="address" placeholder="Address"></textarea>
+                </div>
+                <div class="warning" id="addressWarning">Please enter your address.</div>
+            </div>
+
+            <div class="form-group">
+                <div class="photo-upload">
+                    <input type="file" id="photoInput" accept="image/*">
+                    <span class="file-name" id="fileName">No file chosen</span>
+                    <button type="button" onclick="viewPhoto()">View Photo</button>
+                </div>
+                <div class="photo-preview">
+                    <img id="photoPreview" alt="Preview">
+                </div>
+                <div class="warning" id="photoWarning">Please upload a photo.</div>
+            </div>
+
+            <div class="fingerprint-section">
+                <h3>Fingerprint Scan</h3>
+                <div class="fingerprint-box" id="fingerprintBox" onclick="startFingerprintScan()">
+                    <i class="fas fa-fingerprint"></i>
+                    <span id="fingerprintStatus">Tap to scan</span>
+                </div>
+                <span id="fingerprintWarning" class="warning" style="display: none;">Fingerprint is required.</span>
+
+
+            </div>
+
+            <button class="submit-btn" type="submit">Submit</button>
+
+        </form>
+    </div>
+
+    <script>
+        let isFingerPrintScanned = false;
+        let capturedFingerprintXML = "";  // New global variable
+       function handleLogout() {
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.5s ease';
+
+    setTimeout(() => {
+        window.location.href = 'index.html';
+        sessionStorage.clear();
+        localStorage.clear();
+    });
+}
+
+        function viewPhoto() {
+    const input = document.getElementById('photoInput');
+    const preview = document.getElementById('photoPreview');
+    const fileName = document.getElementById('fileName');
+    const photoWarning = document.getElementById('photoWarning');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            photoWarning.style.display = 'none';
+            input.parentElement.parentElement.classList.remove('error');
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        photoWarning.style.display = 'block';
+        preview.style.display = 'none';
+    }
+}
+
+
+
+// ✅ RD-Service based fingerprint scan
+async function startFingerprintScan() {
+    const voterID = document.getElementById("voterID").value;
+
+    if (!voterID.trim()) {
+        alert("Please enter Voter ID first.");
+        return;
+    }
+
+    const pidOptions = `
+        <PidOptions ver="1.0">
+            <Opts fCount="1" fType="0" iCount="0" pCount="0"
+                format="0" pidVer="2.0" timeout="20000"
+                posh="UNKNOWN" env="P" />
+        </PidOptions>
+    `;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("CAPTURE", "http://127.0.0.1:11100/rd/capture", true);
+    xhr.setRequestHeader("Content-Type", "text/xml");
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                document.getElementById("fingerprintStatus").textContent = "Fingerprint captured!";
+                isFingerPrintScanned = true;
+                capturedFingerprintXML = xhr.responseText; // ✅ Store in JS only
+                alert("Fingerprint captured successfully. It will be saved on form submit.");
+            } else {
+                alert("Capture failed. Make sure RD Service is running.");
+                document.getElementById("fingerprintStatus").textContent = "Scan failed";
+            }
+        }
+    };
+
+    xhr.send(pidOptions);
+}
+
+        function validateForm(event) {
+            event.preventDefault();
+            
+            const voterID = document.getElementById('voterID');
+            const name = document.getElementById('voterName');
+            const mobile = document.getElementById('mobileNumber');
+            const address = document.getElementById('address');
+            const photo = document.getElementById('photoInput');
+            
+            let isValid = true;
+
+            // Reset all warnings and errors
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error');
+            });
+            document.querySelectorAll('.warning').forEach(warning => {
+                warning.style.display = 'none';
+            });
+
+            // Validate Voter ID
+            if (!voterID.value.trim()) {
+                document.getElementById('idWarning').style.display = 'block';
+                voterID.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            }
+
+            // Validate Name
+            if (!name.value.trim()) {
+                document.getElementById('nameWarning').style.display = 'block';
+                name.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            }
+
+            // Validate Mobile Number
+            if (!mobile.value.trim() || !/^[0-9]{10}$/.test(mobile.value.trim())) {
+                document.getElementById('mobileWarning').style.display = 'block';
+                mobile.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            }
+
+            // Validate Address
+            if (!address.value.trim()) {
+                document.getElementById('addressWarning').style.display = 'block';
+                address.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            }
+
+            // Validate Photo
+            if (!photo.files.length) {
+                document.getElementById('photoWarning').style.display = 'block';
+                photo.parentElement.parentElement.classList.add('error');
+                isValid = false;
+            }
+
+            // Validate Fingerprint
+            if (!isFingerPrintScanned) {
+                document.getElementById('fingerprintWarning').style.display = 'block';
+                isValid = false;
+            }
+
+            if (isValid) {
+                alert('Voter registration successful!');
+                document.getElementById('voterForm').reset();
+                document.getElementById('photoPreview').style.display = 'none';
+                document.getElementById('fileName').textContent = 'No file chosen';
+                document.getElementById('fingerprintStatus').textContent = 'Click to start scanning';
+                document.getElementById('fingerprintBox').style.borderColor = '';
+                document.getElementById('fingerprintBox').querySelector('i').style.color = '';
+                isFingerPrintScanned = false;
+            }
+
+            return false;
+        }
+
+        // Add input event listeners for real-time validation
+        document.querySelectorAll('input, textarea').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.parentElement.parentElement.classList.remove('error');
+                    const warning = this.parentElement.parentElement.querySelector('.warning');
+                    if (warning) warning.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('photoInput').addEventListener('change', function() {
+            const fileName = document.getElementById('fileName');
+            const preview = document.getElementById('photoPreview');
+            
+            if (this.files.length > 0) {
+                fileName.textContent = this.files[0].name;
+                this.parentElement.parentElement.classList.remove('error');
+                document.getElementById('photoWarning').style.display = 'none';
+                preview.style.display = 'none';
+            } else {
+                fileName.textContent = 'No file chosen';
+                preview.style.display = 'none';
+            }
+        });
+         document.getElementById("voterForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const voterID = document.getElementById("voterID").value;
+    const voterName = document.getElementById("voterName").value;
+    const mobileNumber = document.getElementById("mobileNumber").value;
+    const address = document.getElementById("address").value;
+    const photoInput = document.getElementById("photoInput").files[0];
+
+    if (!voterID || !voterName || !mobileNumber || !address || !photoInput) {
+        alert("Please fill in all the required fields.");
+        return;
+    }
+
+    if (!isFingerPrintScanned) {
+        alert("Please scan fingerprint before submitting.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("voterID", voterID);
+    formData.append("voterName", voterName);
+    formData.append("mobileNumber", mobileNumber);
+    formData.append("address", address);
+    formData.append("photoInput", photoInput);
+    formData.append("fingerprintXML", capturedFingerprintXML);  // ✅ Include fingerprint in form
+
+
+    fetch("http://127.0.0.1:5000/add_voter", {
+        method: "POST",
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert("Error: " + data.error);
+        } else {
+            alert(data.message);
+            document.getElementById("voterForm").reset();
+            document.getElementById("photoPreview").style.display = "none";
+            document.getElementById("fileName").textContent = "No file chosen";
+            document.getElementById("fingerprintStatus").textContent = "Click to scan fingerprint";
+            isFingerPrintScanned = false;
+        }
+    })
+    .catch(error => {
+        console.error("Error submitting voter:", error);
+    });
+});
+
+    async function captureFingerprint() {
+    try {
+        const response = await fetch("http://127.0.0.1:5000/capture_fingerprint", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ voterID: document.getElementById("voterID").value })
+        });
+
+        const result = await response.json();
+        if (result.error) {
+            alert("Error: " + result.error);
+        } else {
+            alert("Fingerprint captured successfully!");
+            isFingerPrintScanned = true; // Mark fingerprint as scanned
+        }
+    } catch (error) {
+        console.error("Fingerprint capture failed:", error);
+        alert("Fingerprint capture failed.");
+    }
+}
+
+    </script>
+</body>
+</html>

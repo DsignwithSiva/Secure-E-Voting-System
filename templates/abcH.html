@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scan Fingerprint</title>
+</head>
+<body>
+
+<h3>Scan Fingerprint</h3>
+
+<button onclick="captureFingerprint()">Capture</button>
+<br><br>
+<textarea id="fingerprintData" rows="10" cols="80"></textarea>
+
+<script>
+function captureFingerprint() {
+    const pidOptions = `
+        <PidOptions ver="1.0">
+            <Opts fCount="1" fType="0" iCount="0" pCount="0"
+                format="0" pidVer="2.0" timeout="20000"
+                posh="UNKNOWN" env="P" />
+        </PidOptions>
+    `;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("CAPTURE", "http://127.0.0.1:11100/rd/capture", true);
+    xhr.setRequestHeader("Content-Type", "text/xml");
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                document.getElementById("fingerprintData").value = xhr.responseText;
+
+                // Optional: Send to Flask
+                fetch("/store_fingerprint", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ fingerprintXml: xhr.responseText })
+                }).then(res => alert("Fingerprint captured and stored."));
+            } else {
+                alert("Error capturing fingerprint: " + xhr.status);
+            }
+        }
+    };
+
+    xhr.send(pidOptions);
+}
+</script>
+
+</body>
+</html>

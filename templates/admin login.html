@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Modern Glass Morphism</title>
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+     /* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4); /* Gradient background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Animated Background Texture */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 10%, transparent 10.01%);
+  background-size: 20px 20px;
+  animation: moveBackground 10s linear infinite;
+  z-index: -1;
+}
+
+@keyframes moveBackground {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(20px, 20px);
+  }
+}
+
+.container {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  transform: rotate(45deg);
+  z-index: -1;
+  animation: rotateBackground 10s linear infinite;
+}
+
+@keyframes rotateBackground {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.icon {
+  margin-bottom: 20px;
+}
+
+.icon i {
+  font-size: 4rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 25px;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+  }
+}
+
+h1 {
+  color: #fff;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  animation: fadeIn 2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  animation: fadeIn 2s ease-in-out;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 15px;
+  margin: 15px 0;
+  transition: all 0.3s ease;
+}
+
+.input-group:hover {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.input-group i {
+  color: rgba(255, 255, 255, 0.7);
+  margin-right: 15px;
+  font-size: 1.2rem;
+}
+
+input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  outline: none;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+input:focus {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 25px;
+  border: none;
+  border-radius: 10px;
+  background: #4ecdc4;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+button:hover {
+  background: #3aa99f;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="glass-card">
+      <div class="icon">
+        <i class="fas fa-shield-alt"></i> <!-- Shield Icon -->
+      </div>
+      <h1>Admin Login</h1>
+      <p class="subtitle">Secure Blockchain Voting System</p>
+      <form id="loginForm">
+        <div class="input-group">
+          <i class="fas fa-user"></i> <!-- Username Icon -->
+          <input type="text" id="username" placeholder="Username" required>
+        </div>
+        <div class="input-group">
+          <i class="fas fa-lock"></i> <!-- Password Icon -->
+          <input type="password" id="password" placeholder="Password" required>
+        </div>
+        <button type="submit">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+     document.getElementById('loginForm').addEventListener('submit', function (e) {
+  e.preventDefault(); // Prevent form submission
+
+  // Get input values
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+
+  // Check credentials
+  if (username === 'admin' && password === '8074@') {
+    // Redirect to another page (e.g., dashboard.html)
+    window.location.href = 'index.html';
+  } else {
+    alert('Invalid username or password. Please try again.');
+  }
+});
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+      e.preventDefault(); // Prevent page reload
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      fetch("http://127.0.0.1:5000/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.redirect) {
+              window.location.href = data.redirect;  // Redirect to index.html
+          } else {
+              alert("Invalid username or password");
+          }
+      })
+      .catch(error => console.error("Error:", error));
+  });
+  </script>
+</body>
+</html>

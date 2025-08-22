@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Voting System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-image: url("{{ url_for('static', filename='images/bgimage.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #fff;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        header {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+        }
+
+        .logo i {
+            font-size: 24px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: rgba(108, 92, 231, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .logout-btn:hover {
+            background: rgba(90, 77, 216, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            padding: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            border-color: rgba(108, 92, 231, 0.4);
+        }
+
+        .card i {
+            font-size: 40px;
+            color: rgba(108, 92, 231, 0.9);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                grid-template-columns: 1fr;
+            }
+
+            .logo h1 {
+                font-size: 20px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+     <div class="logo">
+            <i class="fas fa-shield-alt"></i>
+            <h1>Blockchain Voting System</h1>
+        </div>
+        <a href="{{ url_for('logout') }}" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </header>
+
+    <div class="container">
+
+        <a href="{{ url_for('add_election_page') }}">
+            <div class="card">
+                <i class="fas fa-vote-yea"></i>
+                <h2>Add Election</h2>
+            </div>
+        </a>
+
+        <a href="{{ url_for('add_candidate_page') }}">
+            <div class="card">
+                <i class="fas fa-user-plus"></i>
+                <h2>Add Candidate</h2>
+            </div>
+        </a>
+
+
+        <a href="{{ url_for('add_voter_page') }}">
+            <div class="card">
+                <i class="fas fa-users"></i>
+                <h2>Add Voters</h2>
+            </div>
+        </a>
+
+        <a href="{{ url_for('calculate_result_page') }}">
+            <div class="card">
+                <i class="fas fa-chart-bar"></i>
+                <h2>Calculate Result</h2>
+            </div>
+        </a>
+    </div>
+
+    <script>
+        function handleLogout() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(() => {
+                window.location.href = 'admin login.html';
+                sessionStorage.clear();
+                localStorage.clear();
+            });
+        }
+         function handleLogout() {
+            sessionStorage.clear();
+            localStorage.clear();
+            window.location.href = "{{ url_for('logout') }}";
+        }
+    </script>
+</body>
+</html>
